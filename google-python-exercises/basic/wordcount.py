@@ -38,6 +38,7 @@ print_words() and print_top().
 """
 
 import sys
+import codecs
 
 # +++your code here+++
 # Define print_words(filename) and print_top(filename) functions.
@@ -45,6 +46,37 @@ import sys
 # and builds and returns a word/count dict for it.
 # Then print_words() and print_top() can just call the utility function.
 
+def read_file(filename):
+  return codecs.open(filename, 'rU', 'utf-8')
+
+def print_words(filename, silent = False):
+  f = read_file(filename)
+  words = f.read().split()
+  count = {}
+
+  for word in words:
+    normalized_word = word.lower()
+    count[normalized_word] = count.get(normalized_word, 0) + 1
+
+  if not silent:
+    for key in sorted(count.keys()): print key, count[key]
+
+  f.close()
+
+  return count
+
+def get_second_value(tuple):
+  return tuple[1]
+
+def print_top(filename):
+  sorted_tuples = sorted(print_words(filename, True).items(), key = get_second_value)
+
+  sorted_tuples.reverse()
+
+  for i in range(20):
+    print sorted_tuples[i][0]
+
+  return sorted_tuples
 ###
 
 # This basic command line argument parsing code is provided and

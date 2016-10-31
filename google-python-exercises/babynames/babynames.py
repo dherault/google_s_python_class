@@ -34,6 +34,9 @@ Suggested milestones for incremental development:
  -Fix main() to use the extract_names list
 """
 
+def by_name(list):
+  return list[0]
+
 def extract_names(filename):
   """
   Given a file name for baby.html, returns a list starting with the year string
@@ -41,7 +44,50 @@ def extract_names(filename):
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
   # +++your code here+++
-  return
+  f = open(filename)
+  html = f.read()
+
+  # Could also use the filename
+  year_match = re.search(r'Popularity in (\d*)', html)
+
+  if (not year_match):
+    print 'No year_match u_u'
+    return
+
+  year = year_match.group(1)
+
+  names_tuples = re.findall(r'<tr align="right"><td>(\d+)</td><td>([\w\s-]+)</td><td>([\w\s-]+)</td>', html)
+
+  if (not names_tuples):
+    print 'No names_tuples u_u'
+    return
+
+  names_dict = {}
+
+  for rank, male, female in names_tuples:
+
+    if male in names_dict:
+      existing_rank = names_dict[male]
+      # print 'Found dupl: ' + male + ' ' + rank + ' ' + existing_rank
+
+      if existing_rank > rank: names_dict[male] = rank
+
+    else: names_dict[male] = rank
+
+    if female in names_dict:
+      existing_rank = names_dict[female]
+      # print 'Found dupl: ' + female + ' ' + rank + ' ' + existing_rank
+
+      if existing_rank > rank: names_dict[female] = rank
+
+    else: names_dict[male] = rank
+
+  results = [year]
+
+  for key in sorted(names_dict.keys()):
+    results.append(key + ' ' + names_dict[key])
+
+  return results
 
 
 def main():
@@ -63,6 +109,8 @@ def main():
   # +++your code here+++
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
-  
+
+  print '\n'.join(extract_names(args[0])) + '\n'
+
 if __name__ == '__main__':
   main()
